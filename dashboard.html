@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | SkillPath</title>
+    <style>
+        :root {
+            --bg: #020617;
+            --card: #0f172a;
+            --accent: #8b5cf6;
+            --secondary: #0ea5e9;
+        }
+
+        body {
+            margin: 0;
+            background-color: var(--bg);
+            color: white;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .navbar {
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 20px;
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Bento Grid Style */
+        .bento-card {
+            background: var(--card);
+            border-radius: 24px;
+            padding: 24px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .welcome-section {
+            grid-column: span 2;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .path-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .path-card {
+            background: rgba(255,255,255,0.03);
+            padding: 20px;
+            border-radius: 20px;
+            transition: 0.3s;
+        }
+
+        .path-card:hover { border-color: var(--accent); background: rgba(139, 92, 246, 0.05); }
+
+        .progress-bar {
+            height: 8px;
+            background: #1e293b;
+            border-radius: 4px;
+            margin-top: 15px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--secondary));
+            transition: width 1s ease-in-out;
+        }
+
+        .stat-pill {
+            background: var(--accent);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <h2>SkillPath<span>.pro</span></h2>
+        <div id="userDisplay">Welcome, Student</div>
+    </nav>
+
+    <div class="container">
+        <div class="bento-card welcome-section">
+            <div>
+                <h1 id="greeting">Loading Dashboard...</h1>
+                <p style="color: #94a3b8;">You have 3 milestones to reach today.</p>
+            </div>
+            <div class="stat-pill">Level 4 Engineer</div>
+        </div>
+
+        <div class="bento-card">
+            <h3>Active Learning Paths</h3>
+            <div id="pathsContainer" class="path-grid">
+                <p>Connecting to neural link...</p>
+            </div>
+        </div>
+
+        <div class="bento-card">
+            <h3>AI Recommendations</h3>
+            <div id="aiRecs" style="color: #94a3b8;">
+                Analyzing your skill gaps...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const userName = localStorage.getItem('user_name') || "Guest";
+        document.getElementById('greeting').innerText = `Welcome back, ${userName}!`;
+        document.getElementById('userDisplay').innerText = userName;
+
+        async function loadData() {
+            try {
+                const res = await fetch('http://localhost:5000/api/dashboard');
+                const data = await res.json();
+                
+                // Load Paths
+                const container = document.getElementById('pathsContainer');
+                container.innerHTML = data.paths.map(path => `
+                    <div class="path-card">
+                        <h4>${path.name}</h4>
+                        <p style="font-size: 0.8rem; color: #94a3b8;">Current: ${path.module}</p>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${path.progress}%"></div>
+                        </div>
+                        <p style="text-align: right; font-size: 0.8rem; margin-top: 5px;">${path.progress}%</p>
+                    </div>
+                `).join('');
+
+                // Load Recs
+                document.getElementById('aiRecs').innerHTML = data.recommendations.map(r => `
+                    <div style="margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                        <span style="color: var(--secondary); font-size: 0.7rem;">${r.type}</span>
+                        <div style="font-size: 0.9rem; color: white;">${r.title}</div>
+                    </div>
+                `).join('');
+
+            } catch (err) {
+                console.error("Backend offline. Run node server.js!");
+            }
+        }
+
+        loadData();
+    </script>
+</body>
+</html>
