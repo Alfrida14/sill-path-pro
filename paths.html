@@ -111,17 +111,18 @@
 <body>
     <div class="app-wrapper">
         <aside class="sidebar">
-            <div class="logo" onclick="location.href='dashboard.html'"><div class="logo-dot"></div><span>LearnPath</span></div>
+            <div class="logo" onclick="location.href='dashboard.html'">
+                <div class="logo-dot"></div><span>LearnPath</span>
+            </div>
             
             <div class="nav-section">
                 <p class="section-label">LEARNING</p>
                 <a href="dashboard.html" class="nav-item"><i data-lucide="layout-grid"></i> Overview</a>
                 <a href="paths.html" class="nav-item active"><i data-lucide="layers"></i> My paths</a>
-            </div>
-            
-            <div class="nav-section">
-                <p class="section-label">INSTRUCTOR</p>
-                <a href="#" class="nav-item"><i data-lucide="clock"></i> Path builder</a>
+                <a href="dashboard.html" class="nav-item"><i data-lucide="book-open"></i> Library</a>
+                <a href="certificates.html" id="sideCert" class="nav-item">
+    <i data-lucide="award"></i> Certificates
+</a>
             </div>
         </aside>
 
@@ -129,7 +130,7 @@
             <nav class="top-nav">
                 <div class="nav-links">
                     <a href="dashboard.html">Dashboard</a>
-                    <a href="#" class="active">Resources</a>
+                    <a href="dashboard.html?view=resources">Resources</a>
                 </div>
                 <div class="user-profile">
                     <span class="user-name" style="font-size: 0.9rem; color: var(--text-dim);">alfrida_pais</span>
@@ -146,7 +147,7 @@
             </div>
 
             <div class="filter-tabs">
-                <div class="tab active">All Paths (3)</div>
+                <div class="tab active">All Paths (2)</div>
                 <div class="tab">In Progress</div>
                 <div class="tab">Completed</div>
             </div>

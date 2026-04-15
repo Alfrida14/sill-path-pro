@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LearnPath | Certificates</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Reusing your root variables and core layout */
+        :root {
+            --bg-black: #0d0d12; --sidebar-bg: #111118; --card-bg: #16161e;
+            --border: #24242e; --text-dim: #6c6c7e; --accent-purple: #8b5cf6;
+            --accent-green: #10b981;
+        }
+
+        body { margin: 0; background-color: var(--bg-black); color: white; font-family: 'Segoe UI', sans-serif; }
+        .app-wrapper { display: flex; }
+
+        /* Sidebar & Top Nav Styles (Copy-pasted from dashboard for consistency) */
+        .sidebar { width: 240px; height: 100vh; background: var(--sidebar-bg); border-right: 1px solid var(--border); padding: 1.5rem; position: sticky; top: 0; box-sizing: border-box; }
+        .logo { display: flex; align-items: center; gap: 10px; font-size: 1.2rem; font-weight: bold; margin-bottom: 2.5rem; cursor: pointer; }
+        .logo-dot { width: 12px; height: 12px; background: var(--accent-purple); border-radius: 50%; }
+        .nav-item { display: flex; align-items: center; gap: 12px; color: var(--text-dim); text-decoration: none; padding: 10px; border-radius: 8px; font-size: 0.9rem; margin-bottom: 4px; transition: 0.2s; }
+        .nav-item.active { background: #1c1c2b; color: var(--accent-purple); }
+        .top-nav { height: 60px; border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 2rem; background: var(--sidebar-bg); }
+        .nav-links a { color: var(--text-dim); text-decoration: none; margin-right: 2rem; font-size: 0.9rem; }
+
+        /* Certificate Grid Styles */
+        .hero { padding: 3rem 2rem 2rem; }
+        .cert-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; padding: 0 2rem; }
+        .cert-card {
+            background: var(--card-bg); border: 1px solid var(--border);
+            border-radius: 16px; padding: 2rem; text-align: center; transition: 0.3s;
+        }
+        .cert-card:hover { border-color: var(--accent-green); transform: translateY(-5px); }
+        .cert-icon { color: var(--accent-green); margin-bottom: 1rem; }
+        .btn-view { background: none; border: 1px solid var(--accent-green); color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; margin-top: 1rem; }
+    </style>
+</head>
+<body>
+    <div class="app-wrapper">
+        <aside class="sidebar">
+            <div class="logo" onclick="location.href='dashboard.html'"><div class="logo-dot"></div><span>LearnPath</span></div>
+            <div class="nav-section">
+                <p class="section-label" style="color:var(--text-dim); font-size:0.7rem; margin-bottom:1rem;">LEARNING</p>
+                <a href="dashboard.html" class="nav-item"><i data-lucide="layout-grid"></i> Overview</a>
+                <a href="paths.html" class="nav-item"><i data-lucide="layers"></i> My paths</a>
+                <a href="dashboard.html?view=resources" class="nav-item"><i data-lucide="book-open"></i> Library</a>
+                <a href="certificates.html" class="nav-item active"><i data-lucide="award"></i> Certificates</a>
+            </div>
+        </aside>
+
+        <main class="main-content" style="flex:1">
+            <nav class="top-nav">
+                <div class="nav-links">
+                    <a href="dashboard.html">Dashboard</a>
+                    <a href="certificates.html" class="active">Certificates</a>
+                </div>
+            </nav>
+
+            <header class="hero">
+                <h1>My Certificates</h1>
+                <p style="color:var(--text-dim)">Celebrate your milestones and share your success.</p>
+            </header>
+
+            <div class="cert-grid">
+                <div class="cert-card">
+                    <div class="cert-icon"><i data-lucide="award" size="48"></i></div>
+                    <h3>Full-stack Engineer</h3>
+                    <p style="color: var(--text-dim); font-size: 0.85rem;">Completed March 2026</p>
+                    <button class="btn-view">Download PDF</button>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script>lucide.createIcons();</script>
+</body>
+</html>

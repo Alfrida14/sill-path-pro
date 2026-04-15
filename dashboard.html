@@ -17,7 +17,7 @@
             --accent-yellow: #f59e0b;
         }
 
-        body { margin: 0; background-color: var(--bg-black); color: white; font-family: 'Segoe UI', sans-serif; }
+        body { margin: 0; background-color: var(--bg-black); color: white; font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
         .app-wrapper { display: flex; }
 
         /* Sidebar */
@@ -26,7 +26,6 @@
             border-right: 1px solid var(--border); padding: 1.5rem;
             position: sticky; top: 0; box-sizing: border-box;
         }
-        /* Added cursor pointer to logo */
         .logo { display: flex; align-items: center; gap: 10px; font-size: 1.2rem; font-weight: bold; margin-bottom: 2.5rem; cursor: pointer; }
         .logo-dot { width: 12px; height: 12px; background: var(--accent-purple); border-radius: 50%; }
         .section-label { color: var(--text-dim); font-size: 0.65rem; font-weight: 800; letter-spacing: 1px; margin: 1.5rem 0 0.8rem; }
@@ -40,8 +39,9 @@
             height: 60px; border-bottom: 1px solid var(--border); 
             display: flex; align-items: center; justify-content: space-between; 
             padding: 0 2rem; background: var(--sidebar-bg); 
+            position: sticky; top: 0; z-index: 10;
         }
-        .nav-links a { color: var(--text-dim); text-decoration: none; margin-right: 2rem; font-size: 0.9rem; }
+        .nav-links a { color: var(--text-dim); text-decoration: none; margin-right: 2rem; font-size: 0.9rem; cursor: pointer; transition: 0.2s; }
         .nav-links a.active { color: white; font-weight: bold; }
 
         .header-search {
@@ -54,48 +54,34 @@
         .user-profile { display: flex; align-items: center; gap: 12px; }
         .avatar { width: 35px; height: 35px; background: #3b82f6; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
 
-        /* Layout Grids */
+        /* Views */
+        .view-section { display: none; padding-bottom: 3rem; }
+        .view-section.active-view { display: block; animation: slideIn 0.3s ease; }
+
         .hero { padding: 3rem 2rem 2rem; }
         .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; padding: 0 2rem; }
-        .stat-card { 
-            background: var(--card-bg); padding: 1.5rem; border-radius: 12px; 
-            border: 1px solid var(--border); transition: 0.3s;
-        }
+        .stat-card { background: var(--card-bg); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border); transition: 0.3s; }
         .stat-card:hover { border-color: var(--accent-purple); transform: translateY(-5px); }
 
         .dashboard-grid { display: grid; grid-template-columns: 1.8fr 1.2fr; gap: 2.5rem; padding: 2rem; }
         .left-col { display: flex; flex-direction: column; gap: 2rem; }
+        .path-card { background: var(--card-bg); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 1.5rem; }
         
-        .activity-card, .rec-card { background: var(--card-bg); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border); transition: all 0.3s ease; }
-        
-        .path-card { 
-            background: var(--card-bg); 
-            padding: 1.5rem; 
-            border-radius: 12px; 
-            border: 1px solid var(--border); 
-            margin-bottom: 1.5rem; 
-        }
-        .progress-track { width: 100%; height: 6px; background: #1c1c26; border-radius: 10px; margin-top: 10px; }
-        .progress-fill { height: 100%; border-radius: 10px; transition: 1s cubic-bezier(0.4, 0, 0.2, 1); }
+        /* Resource Specifics */
+        .resource-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; padding: 0 2rem; }
+        .res-card { background: var(--card-bg); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border); transition: 0.3s; position: relative; overflow: hidden; }
+        .res-card:hover { border-color: var(--accent-yellow); }
+        .tag { font-size: 10px; font-weight: 800; color: var(--accent-purple); text-transform: uppercase; margin-bottom: 8px; display: block; }
 
+        .progress-track { width: 100%; height: 6px; background: #1c1c26; border-radius: 10px; margin-top: 10px; }
+        .progress-fill { height: 100%; border-radius: 10px; transition: 1s ease; }
         .bg-purple { background: var(--accent-purple); }
         .bg-green { background: var(--accent-green); }
-        
-        .tag { font-size: 10px; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; display: block; }
-        .purple-tag { color: #a78bfa; }
-        .blue-tag { color: #60a5fa; }
-        
-        .complete-btn {
-            margin-top:10px; background:none; border:1px solid #24242e; 
-            color:var(--text-dim); border-radius:6px; cursor:pointer; 
-            font-size:10px; padding:5px 10px; transition: 0.2s;
-        }
+
+        .complete-btn { margin-top:10px; background:none; border:1px solid #24242e; color:var(--text-dim); border-radius:6px; cursor:pointer; font-size:10px; padding:5px 10px; }
         .complete-btn:hover { border-color: var(--accent-purple); color: white; }
 
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -106,22 +92,29 @@
             </div>
             
             <div class="nav-section">
-                <p class="section-label">LEARNING</p>
-                <a href="dashboard.html" class="nav-item active"><i data-lucide="layout-grid"></i> Overview</a>
-                <a href="paths.html" class="nav-item"><i data-lucide="layers"></i> My paths</a>
-            </div>
-            
-            <div class="nav-section">
-                <p class="section-label">INSTRUCTOR</p>
-                <a href="#" class="nav-item"><i data-lucide="clock"></i> Path builder</a>
-            </div>
+    <p class="section-label">LEARNING</p>
+    <a href="#" onclick="showView('dashboard')" id="sideDash" class="nav-item active">
+        <i data-lucide="layout-grid"></i> Overview
+    </a>
+    
+    <a href="paths.html" class="nav-item">
+        <i data-lucide="layers"></i> My paths
+    </a>
+    
+    <a href="#" onclick="showView('resources')" id="sideRes" class="nav-item">
+        <i data-lucide="book-open"></i> Library
+    </a>
+    <a href="certificates.html" id="sideCert" class="nav-item">
+    <i data-lucide="award"></i> Certificates
+</a>
+</div>
         </aside>
 
         <main class="main-content">
             <nav class="top-nav">
                 <div class="nav-links">
-                    <a href="dashboard.html" class="active">Dashboard</a>
-                    <a href="#">Resources</a>
+                    <a id="navDash" class="active" onclick="showView('dashboard')">Dashboard</a>
+                    <a id="navRes" onclick="showView('resources')">Resources</a>
                 </div>
                 <div class="header-search">
                     <i data-lucide="search"></i>
@@ -129,139 +122,195 @@
                 </div>
                 <div class="user-profile">
                     <span class="user-name">alfrida_pais</span>
-                    <div class="avatar" id="userAvatar">AP</div>
+                    <div class="avatar">AP</div>
                 </div>
             </nav>
 
-            <header class="hero">
-                <h1>Welcome back, <span id="welcome-name">alfrida_pais</span> 👋</h1>
-                <p style="color:var(--text-dim)">You're on a 5-day streak. Keep it up!</p>
-            </header>
+            <div id="dashboardView" class="view-section active-view">
+                <header class="hero">
+                    <h1>Welcome back, <span id="welcome-name">alfrida_pais</span> 👋</h1>
+                    <p style="color:var(--text-dim)">You're on a <span id="streak-label">5</span>-day streak. Keep it up!</p>
+                </header>
 
-            <section class="stats-grid">
-                <div class="stat-card">
-                    <span class="card-label">PATHS ENROLLED</span>
-                    <h2 id="paths-enrolled-stat" style="font-size: 2rem; margin: 10px 0;">5</h2>
-                </div>
-                <div class="stat-card">
-                    <span class="card-label">MODULES DONE</span>
-                    <h2 id="modules-stat" style="font-size: 2rem; margin: 10px 0; color: var(--accent-green);">14</h2>
-                </div>
-                <div class="stat-card">
-                    <span class="card-label">HOURS LEARNED</span>
-                    <h2 style="font-size: 2rem; margin: 10px 0; color: var(--accent-yellow);">22.4</h2>
-                </div>
-                <div class="stat-card">
-                    <span class="card-label">DAY STREAK</span>
-                    <h2 style="font-size: 2rem; margin: 10px 0; color: var(--accent-purple);">5</h2>
-                </div>
-            </section>
+                <section class="stats-grid">
+                    <div class="stat-card">
+                        <span class="card-label">PATHS ENROLLED</span>
+                        <h2 id="paths-enrolled-stat">0</h2>
+                    </div>
+                    <div class="stat-card">
+                        <span class="card-label">MODULES DONE</span>
+                        <h2 id="modules-stat" style="color: var(--accent-green);">0</h2>
+                    </div>
+                    <div class="stat-card">
+                        <span class="card-label">HOURS LEARNED</span>
+                        <h2 id="hours-stat" style="color: var(--accent-yellow);">0</h2>
+                    </div>
+                    <div class="stat-card">
+                        <span class="card-label">DAY STREAK</span>
+                        <h2 id="streak-stat" style="color: var(--accent-purple);">0</h2>
+                    </div>
+                </section>
 
-            <div class="activity-card" style="margin: 2rem; border-style: dashed; border-color: var(--accent-purple);">
-                <h3 style="margin-top: 0;">Create New Learning Path</h3>
-                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-                    <input type="text" id="newPathName" placeholder="Path Name (e.g. Data Science)" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: #0d0d12; color: white;">
-                    <input type="number" id="newPathProgress" placeholder="Initial %" style="width: 100px; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: #0d0d12; color: white;">
-                    <button onclick="addNewPath()" style="background: var(--accent-purple); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold;">+ Add Path</button>
+                <div class="dashboard-grid">
+                    <div class="left-col">
+                        <div class="paths-section">
+                            <h3 style="margin-bottom: 1.5rem;">Active paths</h3>
+                            <div id="pathsContainer">
+                                <div class="path-card" id="path-fs">
+                                    <div style="display:flex; justify-content:space-between">
+                                        <h4>Full-stack engineering</h4>
+                                        <span class="path-percentage text-purple">44%</span>
+                                    </div>
+                                    <div class="progress-track"><div class="progress-fill bg-purple" style="width: 44%"></div></div>
+                                    <button class="complete-btn" onclick="updateProgress('path-fs', 12)">Mark Module Complete</button>
+                                </div>
+                                <div class="path-card" id="path-ml">
+                                    <div style="display:flex; justify-content:space-between">
+                                        <h4>ML fundamentals</h4>
+                                        <span class="path-percentage text-green">72%</span>
+                                    </div>
+                                    <div class="progress-track"><div class="progress-fill bg-green" style="width: 72%"></div></div>
+                                    <button class="complete-btn" onclick="updateProgress('path-ml', 10)">Mark Module Complete</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <aside class="right-col">
+                        <h3>Quick Add</h3>
+                        <div style="background: var(--card-bg); padding: 1.2rem; border-radius: 12px; border: 1px dashed var(--border);">
+                            <input type="text" id="newPathName" placeholder="Path Name" style="width:100%; padding:8px; margin-bottom:10px; background:#0d0d12; border:1px solid var(--border); color:white; border-radius:6px;">
+                            <button onclick="addNewPath()" style="width:100%; background:var(--accent-purple); border:none; color:white; padding:10px; border-radius:6px; cursor:pointer;">+ Add New Path</button>
+                        </div>
+                    </aside>
                 </div>
             </div>
 
-            <div class="dashboard-grid">
-                <div class="left-col">
-                    <div class="paths-section">
-                        <h3 style="margin-bottom: 1.5rem;">Active paths</h3>
-                        
-                        <div class="path-card" id="path-fs">
-                            <div style="display:flex; justify-content:space-between">
-                                <h4>Full-stack engineering</h4>
-                                <span class="path-percentage text-purple">44%</span>
-                            </div>
-                            <div class="progress-track"><div class="progress-fill bg-purple" style="width: 44%"></div></div>
-                            <button class="complete-btn" onclick="updateProgress('path-fs', 12)">Mark Module Complete</button>
-                        </div>
-
-                        <div class="path-card" id="path-ml">
-                            <div style="display:flex; justify-content:space-between">
-                                <h4>ML fundamentals</h4>
-                                <span class="path-percentage text-green">72%</span>
-                            </div>
-                            <div class="progress-track"><div class="progress-fill bg-green" style="width: 72%"></div></div>
-                            <button class="complete-btn" onclick="updateProgress('path-ml', 10)">Mark Module Complete</button>
-                        </div>
+            <div id="resourcesView" class="view-section">
+                <header class="hero">
+                    <h1>Learning Resources</h1>
+                    <p style="color:var(--text-dim)">Handpicked documentation and tools for your engineering journey.</p>
+                </header>
+                
+                <div class="resource-grid">
+                    <div class="res-card">
+                        <span class="tag" style="color:var(--accent-yellow)">Documentation</span>
+                        <h4>MDN Web Docs</h4>
+                        <p style="font-size: 0.8rem; color: var(--text-dim);">The definitive resource for HTML, CSS, and JS.</p>
+                        <button class="complete-btn" onclick="window.open('https://developer.mozilla.org', '_blank')">Open Resource</button>
+                    </div>
+                    <div class="res-card">
+                        <span class="tag" style="color:var(--accent-green)">Cheat Sheet</span>
+                        <h4>Python for Data Science</h4>
+                        <p style="font-size: 0.8rem; color: var(--text-dim);">Quick reference for NumPy, Pandas, and Matplotlib.</p>
+                        <button class="complete-btn">Download PDF</button>
+                    </div>
+                    <div class="res-card">
+                        <span class="tag" style="color:var(--accent-purple)">Tool</span>
+                        <h4>Lucide Icon Search</h4>
+                        <p style="font-size: 0.8rem; color: var(--text-dim);">Find the perfect icons for your UI/UX projects.</p>
+                        <button class="complete-btn" onclick="window.open('https://lucide.dev', '_blank')">Visit Site</button>
                     </div>
                 </div>
-
-                <aside class="right-col">
-                    <h3>AI recommendations</h3>
-                    <div class="rec-card">
-                        <span class="tag blue-tag">NEXT UP</span>
-                        <h4 style="margin: 5px 0;">REST API design patterns</h4>
-                        <p style="font-size: 0.75rem; color: var(--text-dim);">Follows your Express.js module</p>
-                    </div>
-                </aside>
             </div>
+
         </main>
     </div>
 
     <script>
         lucide.createIcons();
 
-        let modulesCompleted = 14; 
+        const HOURS_PER_MODULE = 1.6;
+        const MODULES_PER_PATH = 10;
+
+        // Functional View Toggling
+        function showView(view) {
+            const dashView = document.getElementById('dashboardView');
+            const resView = document.getElementById('resourcesView');
+            const navDash = document.getElementById('navDash');
+            const navRes = document.getElementById('navRes');
+            const sideDash = document.getElementById('sideDash');
+            const sideRes = document.getElementById('sideRes');
+
+            if(view === 'dashboard') {
+                dashView.classList.add('active-view');
+                resView.classList.remove('active-view');
+                navDash.classList.add('active');
+                navRes.classList.remove('active');
+                sideDash.classList.add('active');
+                sideRes.classList.remove('active');
+            } else {
+                resView.classList.add('active-view');
+                dashView.classList.remove('active-view');
+                navRes.classList.add('active');
+                navDash.classList.remove('active');
+                sideRes.classList.add('active');
+                sideDash.classList.remove('active');
+            }
+        }
+
+        function syncUserStats() {
+            const pathCards = document.querySelectorAll('.path-card');
+            document.getElementById('paths-enrolled-stat').innerText = pathCards.length;
+            let totalModules = 0;
+            pathCards.forEach(card => {
+                const percent = parseInt(card.querySelector('.path-percentage').innerText);
+                totalModules += Math.floor((percent / 100) * MODULES_PER_PATH);
+            });
+            document.getElementById('modules-stat').innerText = totalModules;
+            document.getElementById('hours-stat').innerText = (totalModules * HOURS_PER_MODULE).toFixed(1);
+            const streak = localStorage.getItem('userStreak') || 5;
+            document.getElementById('streak-stat').innerText = streak;
+            document.getElementById('streak-label').innerText = streak;
+        }
 
         function updateProgress(cardId, increment) {
             const card = document.getElementById(cardId);
             const bar = card.querySelector('.progress-fill');
             const text = card.querySelector('.path-percentage');
-            
-            let currentPercent = parseInt(text.innerText);
-            let newPercent = Math.min(currentPercent + increment, 100);
-            
+            let newPercent = Math.min(parseInt(text.innerText) + increment, 100);
             bar.style.width = newPercent + "%";
             text.innerText = newPercent + "%";
-            
-            modulesCompleted++;
-            document.getElementById('modules-stat').innerText = modulesCompleted;
+            syncUserStats();
         }
 
         function addNewPath() {
-            const nameInput = document.getElementById('newPathName');
-            const progressInput = document.getElementById('newPathProgress');
-            const container = document.querySelector('.paths-section');
-
-            if (nameInput.value.trim() === "") {
-                alert("Please enter a path name");
-                return;
-            }
-
-            const newId = "path-" + Date.now();
-            const progress = progressInput.value || 0;
-
-            const pathHTML = `
-                <div class="path-card" id="${newId}" style="animation: slideIn 0.5s ease forwards;">
+            const name = document.getElementById('newPathName').value;
+            if (!name) return;
+            const id = "path-" + Date.now();
+            const html = `
+                <div class="path-card" id="${id}" style="animation: slideIn 0.3s ease;">
                     <div style="display:flex; justify-content:space-between">
-                        <h4>${nameInput.value}</h4>
-                        <span class="path-percentage text-purple">${progress}%</span>
+                        <h4>${name}</h4>
+                        <span class="path-percentage text-purple">0%</span>
                     </div>
-                    <div class="progress-track"><div class="progress-fill bg-purple" style="width: ${progress}%"></div></div>
-                    <button class="complete-btn" onclick="updateProgress('${newId}', 10)">Mark Module Complete</button>
-                </div>
-            `;
-
-            container.insertAdjacentHTML('beforeend', pathHTML);
-            const pathStat = document.getElementById('paths-enrolled-stat');
-            pathStat.innerText = parseInt(pathStat.innerText) + 1;
-
-            nameInput.value = "";
-            progressInput.value = "";
+                    <div class="progress-track"><div class="progress-fill bg-purple" style="width: 0%"></div></div>
+                    <button class="complete-btn" onclick="updateProgress('${id}', 10)">Mark Module Complete</button>
+                </div>`;
+            document.getElementById('pathsContainer').insertAdjacentHTML('afterbegin', html);
+            document.getElementById('newPathName').value = "";
+            syncUserStats();
         }
 
         document.getElementById('pathSearch').addEventListener('input', (e) => {
-            const val = e.target.value.toLowerCase();
+            const searchTerm = e.target.value.toLowerCase();
             document.querySelectorAll('.path-card').forEach(card => {
-                const text = card.querySelector('h4').innerText.toLowerCase();
-                card.style.display = text.includes(val) ? "block" : "none";
+                const title = card.querySelector('h4').innerText.toLowerCase();
+                card.style.display = title.includes(searchTerm) ? "block" : "none";
             });
         });
+
+        window.addEventListener('DOMContentLoaded', () => {
+    syncUserStats(); // Your existing function
+
+    // Check if the URL wants us to show resources
+    const urlParams = new URLSearchParams(window.location.search);
+    const view = urlParams.get('view');
+
+    if (view === 'resources') {
+        showView('resources');
+    }
+});
+
     </script>
 </body>
 </html>
