@@ -217,100 +217,124 @@
     </div>
 
     <script>
-        lucide.createIcons();
+    lucide.createIcons();
 
-        const HOURS_PER_MODULE = 1.6;
-        const MODULES_PER_PATH = 10;
+    const HOURS_PER_MODULE = 1.6;
+    const MODULES_PER_PATH = 10;
 
-        // Functional View Toggling
-        function showView(view) {
-            const dashView = document.getElementById('dashboardView');
-            const resView = document.getElementById('resourcesView');
-            const navDash = document.getElementById('navDash');
-            const navRes = document.getElementById('navRes');
-            const sideDash = document.getElementById('sideDash');
-            const sideRes = document.getElementById('sideRes');
+    // --- IMPROVED VIEW TOGGLING ---
+    // This handles Dashboard, Resources, and Certificates automatically
+    function showView(viewName) {
+        // 1. Define all views and their corresponding nav IDs
+        const views = {
+            'dashboard': { div: 'dashboardView', side: 'sideDash', top: 'navDash' },
+            'resources': { div: 'resourcesView', side: 'sideRes', top: 'navRes' },
+            'certificates': { div: 'certificatesView', side: 'sideCert', top: null } 
+        };
 
-            if(view === 'dashboard') {
-                dashView.classList.add('active-view');
-                resView.classList.remove('active-view');
-                navDash.classList.add('active');
-                navRes.classList.remove('active');
-                sideDash.classList.add('active');
-                sideRes.classList.remove('active');
-            } else {
-                resView.classList.add('active-view');
-                dashView.classList.remove('active-view');
-                navRes.classList.add('active');
-                navDash.classList.remove('active');
-                sideRes.classList.add('active');
-                sideDash.classList.remove('active');
-            }
+        // 2. Hide all views and remove all active classes
+        Object.values(views).forEach(v => {
+            const divEl = document.getElementById(v.div);
+            if (divEl) divEl.classList.remove('active-view');
+            
+            if (v.side) document.getElementById(v.side)?.classList.remove('active');
+            if (v.top) document.getElementById(v.top)?.classList.remove('active');
+        });
+
+        // 3. Show the selected view
+        const target = views[viewName];
+        if (target) {
+            document.getElementById(target.div).classList.add('active-view');
+            if (target.side) document.getElementById(target.side).classList.add('active');
+            if (target.top) document.getElementById(target.top).classList.add('active');
         }
+    }
 
-        function syncUserStats() {
-            const pathCards = document.querySelectorAll('.path-card');
-            document.getElementById('paths-enrolled-stat').innerText = pathCards.length;
-            let totalModules = 0;
-            pathCards.forEach(card => {
-                const percent = parseInt(card.querySelector('.path-percentage').innerText);
-                totalModules += Math.floor((percent / 100) * MODULES_PER_PATH);
-            });
-            document.getElementById('modules-stat').innerText = totalModules;
-            document.getElementById('hours-stat').innerText = (totalModules * HOURS_PER_MODULE).toFixed(1);
-            const streak = localStorage.getItem('userStreak') || 5;
-            document.getElementById('streak-stat').innerText = streak;
-            document.getElementById('streak-label').innerText = streak;
-        }
+    // --- USER STATS LOGIC ---
+    function syncUserStats() {
+        const pathCards = document.querySelectorAll('.path-card');
+        const enrolledStat = document.getElementById('paths-enrolled-stat');
+        
+        if(enrolledStat) enrolledStat.innerText = pathCards.length;
+        
+        let totalModules = 0;
+        pathCards.forEach(card => {
+            const percentText = card.querySelector('.path-percentage').innerText;
+            const percent = parseInt(percentText);
+            totalModules += Math.floor((percent / 100) * MODULES_PER_PATH);
+        });
 
-        function updateProgress(cardId, increment) {
-            const card = document.getElementById(cardId);
-            const bar = card.querySelector('.progress-fill');
-            const text = card.querySelector('.path-percentage');
-            let newPercent = Math.min(parseInt(text.innerText) + increment, 100);
-            bar.style.width = newPercent + "%";
-            text.innerText = newPercent + "%";
-            syncUserStats();
-        }
+        document.getElementById('modules-stat').innerText = totalModules;
+        document.getElementById('hours-stat').innerText = (totalModules * HOURS_PER_MODULE).toFixed(1);
+        
+        const streak = localStorage.getItem('userStreak') || 5;
+        const streakStat = document.getElementById('streak-stat');
+        const streakLabel = document.getElementById('streak-label');
+        if(streakStat) streakStat.innerText = streak;
+        if(streakLabel) streakLabel.innerText = streak;
+    }
 
-        function addNewPath() {
-            const name = document.getElementById('newPathName').value;
-            if (!name) return;
-            const id = "path-" + Date.now();
-            const html = `
-                <div class="path-card" id="${id}" style="animation: slideIn 0.3s ease;">
-                    <div style="display:flex; justify-content:space-between">
-                        <h4>${name}</h4>
-                        <span class="path-percentage text-purple">0%</span>
-                    </div>
-                    <div class="progress-track"><div class="progress-fill bg-purple" style="width: 0%"></div></div>
-                    <button class="complete-btn" onclick="updateProgress('${id}', 10)">Mark Module Complete</button>
-                </div>`;
-            document.getElementById('pathsContainer').insertAdjacentHTML('afterbegin', html);
-            document.getElementById('newPathName').value = "";
-            syncUserStats();
-        }
+    // --- PROGRESS LOGIC ---
+    function updateProgress(cardId, increment) {
+        const card = document.getElementById(cardId);
+        const bar = card.querySelector('.progress-fill');
+        const text = card.querySelector('.path-percentage');
+        let newPercent = Math.min(parseInt(text.innerText) + increment, 100);
+        
+        bar.style.width = newPercent + "%";
+        text.innerText = newPercent + "%";
+        syncUserStats();
+    }
 
-        document.getElementById('pathSearch').addEventListener('input', (e) => {
+    // --- ADD PATH LOGIC ---
+    function addNewPath() {
+        const nameInput = document.getElementById('newPathName');
+        const name = nameInput.value;
+        if (!name) return;
+        
+        const id = "path-" + Date.now();
+        const html = `
+            <div class="path-card" id="${id}" style="animation: slideIn 0.3s ease;">
+                <div style="display:flex; justify-content:space-between">
+                    <h4>${name}</h4>
+                    <span class="path-percentage text-purple">0%</span>
+                </div>
+                <div class="progress-track"><div class="progress-fill bg-purple" style="width: 0%"></div></div>
+                <button class="complete-btn" onclick="updateProgress('${id}', 10)">Mark Module Complete</button>
+            </div>`;
+        
+        document.getElementById('pathsContainer').insertAdjacentHTML('afterbegin', html);
+        nameInput.value = "";
+        syncUserStats();
+    }
+
+    // --- SEARCH LOGIC ---
+    const searchInput = document.getElementById('pathSearch');
+    if(searchInput) {
+        searchInput.addEventListener('input', (e) => {
             const searchTerm = e.target.value.toLowerCase();
             document.querySelectorAll('.path-card').forEach(card => {
                 const title = card.querySelector('h4').innerText.toLowerCase();
                 card.style.display = title.includes(searchTerm) ? "block" : "none";
             });
         });
-
-        window.addEventListener('DOMContentLoaded', () => {
-    syncUserStats(); // Your existing function
-
-    // Check if the URL wants us to show resources
-    const urlParams = new URLSearchParams(window.location.search);
-    const view = urlParams.get('view');
-
-    if (view === 'resources') {
-        showView('resources');
     }
-});
 
-    </script>
+    // --- URL PARAMETER LISTENER ---
+    window.addEventListener('DOMContentLoaded', () => {
+        syncUserStats();
+
+        // Check if user came from paths.html with a request for a specific view
+        const urlParams = new URLSearchParams(window.location.search);
+        const viewRequest = urlParams.get('view');
+
+        if (viewRequest === 'resources') {
+            showView('resources');
+        } else if (viewRequest === 'certificates') {
+            showView('certificates');
+        }
+    });
+
+</script>
 </body>
 </html>
