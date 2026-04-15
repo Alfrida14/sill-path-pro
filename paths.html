@@ -20,7 +20,7 @@
         body { margin: 0; background-color: var(--bg-black); color: white; font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
         .app-wrapper { display: flex; }
 
-        /* Sidebar - Exact match to dashboard */
+        /* Sidebar */
         .sidebar {
             width: 240px; height: 100vh; background: var(--sidebar-bg);
             border-right: 1px solid var(--border); padding: 1.5rem;
@@ -36,7 +36,7 @@
         /* Main Content */
         .main-content { flex: 1; min-width: 0; }
         
-        /* Top Nav - Aligned with dashboard */
+        /* Top Nav */
         .top-nav { 
             height: 60px; border-bottom: 1px solid var(--border); 
             display: flex; align-items: center; justify-content: space-between; 
@@ -115,22 +115,21 @@
                 <div class="logo-dot"></div><span>LearnPath</span>
             </div>
             
-           <div class="nav-section">
-    <p class="section-label">LEARNING</p>
-    <a href="dashboard.html" id="sideDash" class="nav-item">
-        <i data-lucide="layout-grid"></i> Overview
-    </a>
-    <a href="paths.html" id="sidePaths" class="nav-item">
-        <i data-lucide="layers"></i> My paths
-    </a>
-    
-    <a href="dashboard.html?view=resources" id="sideRes" class="nav-item">
-        <i data-lucide="book-open"></i> Library
-    </a>
-    <a href="certificates.html" id="sideCert" class="nav-item">
-        <i data-lucide="award"></i> Certificates
-    </a>
-</div> 
+            <div class="nav-section">
+                <p class="section-label">LEARNING</p>
+                <a href="dashboard.html" id="sideDash" class="nav-item">
+                    <i data-lucide="layout-grid"></i> Overview
+                </a>
+                <a href="paths.html" id="sidePaths" class="nav-item active">
+                    <i data-lucide="layers"></i> My paths
+                </a>
+                <a href="dashboard.html?view=resources" id="sideRes" class="nav-item">
+                    <i data-lucide="book-open"></i> Library
+                </a>
+                <a href="certificates.html" id="sideCert" class="nav-item">
+                    <i data-lucide="award"></i> Certificates
+                </a>
+            </div> 
         </aside>
 
         <main class="main-content">
@@ -154,12 +153,12 @@
             </div>
 
             <div class="filter-tabs">
-                <div class="tab active">All Paths (2)</div>
-                <div class="tab">In Progress</div>
-                <div class="tab">Completed</div>
+                <div class="tab active" onclick="filterPaths('all', this)">All Paths (2)</div>
+                <div class="tab" onclick="filterPaths('in-progress', this)">In Progress</div>
+                <div class="tab" onclick="filterPaths('completed', this)">Completed</div>
             </div>
 
-            <div class="paths-list-container">
+            <div class="paths-list-container" id="pathsList">
                 <div class="detailed-path-card">
                     <div class="path-info">
                         <h2>Full-stack Engineering</h2>
@@ -168,7 +167,6 @@
                             <div class="meta-item"><i data-lucide="clock" size="14"></i> 48 Hours Total</div>
                             <div class="meta-item"><i data-lucide="award" size="14"></i> Professional Cert</div>
                         </div>
-                        
                         <div class="module-preview">
                             <div class="module-pill">
                                 <span>1. React Hooks Deep Dive</span>
@@ -184,9 +182,8 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="progress-right">
-                        <h3 style="margin: 0; font-size: 2.5rem;">44%</h3>
+                        <h3 class="percent-display" style="margin: 0; font-size: 2.5rem;">44%</h3>
                         <p style="color: var(--text-dim); font-size: 0.75rem; margin-bottom: 1.5rem; text-transform: uppercase; letter-spacing: 1px;">Overall Progress</p>
                         <button class="btn-purple" style="width: 100%;">Continue</button>
                     </div>
@@ -199,7 +196,6 @@
                             <div class="meta-item"><i data-lucide="book-open" size="14"></i> 8 Modules</div>
                             <div class="meta-item"><i data-lucide="clock" size="14"></i> 30 Hours Total</div>
                         </div>
-                        
                         <div class="module-preview">
                             <div class="module-pill">
                                 <span>1. Linear Regression Basics</span>
@@ -211,9 +207,8 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="progress-right">
-                        <h3 style="margin: 0; font-size: 2.5rem;">72%</h3>
+                        <h3 class="percent-display" style="margin: 0; font-size: 2.5rem;">72%</h3>
                         <p style="color: var(--text-dim); font-size: 0.75rem; margin-bottom: 1.5rem; text-transform: uppercase; letter-spacing: 1px;">Overall Progress</p>
                         <button class="btn-purple" style="width: 100%;">Continue</button>
                     </div>
@@ -224,6 +219,29 @@
 
     <script>
         lucide.createIcons();
+
+        function filterPaths(status, element) {
+            // Update active tab UI
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            element.classList.add('active');
+
+            const cards = document.querySelectorAll('.detailed-path-card');
+            
+            cards.forEach(card => {
+                const percentText = card.querySelector('.percent-display').innerText;
+                const percentage = parseInt(percentText);
+
+                if (status === 'all') {
+                    card.style.display = 'grid';
+                } else if (status === 'in-progress') {
+                    // Show if percentage is > 0 and < 100
+                    card.style.display = (percentage > 0 && percentage < 100) ? 'grid' : 'none';
+                } else if (status === 'completed') {
+                    // Show only if percentage is 100
+                    card.style.display = (percentage === 100) ? 'grid' : 'none';
+                }
+            });
+        }
     </script>
 </body>
 </html>
