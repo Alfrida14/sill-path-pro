@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LearnPath | My Paths</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --bg-black: #0d0d12;
+            --sidebar-bg: #111118;
+            --card-bg: #16161e;
+            --border: #24242e;
+            --text-dim: #6c6c7e;
+            --accent-purple: #8b5cf6;
+            --accent-green: #10b981;
+            --accent-yellow: #f59e0b;
+        }
+
+        body { margin: 0; background-color: var(--bg-black); color: white; font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
+        .app-wrapper { display: flex; }
+
+        /* Sidebar - Exact match to dashboard */
+        .sidebar {
+            width: 240px; height: 100vh; background: var(--sidebar-bg);
+            border-right: 1px solid var(--border); padding: 1.5rem;
+            position: sticky; top: 0; box-sizing: border-box;
+        }
+        .logo { display: flex; align-items: center; gap: 10px; font-size: 1.2rem; font-weight: bold; margin-bottom: 2.5rem; cursor: pointer; }
+        .logo-dot { width: 12px; height: 12px; background: var(--accent-purple); border-radius: 50%; }
+        .section-label { color: var(--text-dim); font-size: 0.65rem; font-weight: 800; letter-spacing: 1px; margin: 1.5rem 0 0.8rem; }
+        .nav-item { display: flex; align-items: center; gap: 12px; color: var(--text-dim); text-decoration: none; padding: 10px; border-radius: 8px; font-size: 0.9rem; margin-bottom: 4px; transition: 0.2s; }
+        .nav-item:hover { background: #161622; color: white; }
+        .nav-item.active { background: #1c1c2b; color: var(--accent-purple); }
+
+        /* Main Content */
+        .main-content { flex: 1; min-width: 0; }
+        
+        /* Top Nav - Aligned with dashboard */
+        .top-nav { 
+            height: 60px; border-bottom: 1px solid var(--border); 
+            display: flex; align-items: center; justify-content: space-between; 
+            padding: 0 2rem; background: var(--sidebar-bg); 
+        }
+        .nav-links a { color: var(--text-dim); text-decoration: none; margin-right: 2rem; font-size: 0.9rem; }
+        .nav-links a.active { color: white; font-weight: bold; }
+
+        .user-profile { display: flex; align-items: center; gap: 12px; }
+        .avatar { width: 35px; height: 35px; background: #3b82f6; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+
+        /* Content Layout */
+        .page-header { padding: 3rem 2rem 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+        .filter-tabs { display: flex; gap: 20px; border-bottom: 1px solid var(--border); margin: 0 2rem 2rem; }
+        .tab { padding: 10px 5px; color: var(--text-dim); cursor: pointer; font-size: 0.9rem; position: relative; }
+        .tab.active { color: white; border-bottom: 2px solid var(--accent-purple); }
+
+        .paths-list-container { padding: 0 2rem 2rem; }
+
+        .detailed-path-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            display: grid;
+            grid-template-columns: 1fr 250px;
+            gap: 2rem;
+            transition: 0.3s;
+        }
+        .detailed-path-card:hover { border-color: var(--accent-purple); }
+
+        .path-info h2 { margin: 0 0 10px 0; font-size: 1.5rem; }
+        .path-meta { display: flex; gap: 15px; color: var(--text-dim); font-size: 0.85rem; margin-bottom: 1.5rem; }
+        .meta-item { display: flex; align-items: center; gap: 5px; }
+
+        .module-preview { display: flex; flex-direction: column; gap: 10px; }
+        .module-pill {
+            background: #1c1c26;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid transparent;
+        }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+        .progress-right {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-left: 1px solid var(--border);
+            padding-left: 2rem;
+        }
+
+        .btn-purple {
+            background: var(--accent-purple);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-purple:hover { opacity: 0.9; transform: translateY(-2px); }
+    </style>
+</head>
+<body>
+    <div class="app-wrapper">
+        <aside class="sidebar">
+            <div class="logo" onclick="location.href='dashboard.html'"><div class="logo-dot"></div><span>LearnPath</span></div>
+            
+            <div class="nav-section">
+                <p class="section-label">LEARNING</p>
+                <a href="dashboard.html" class="nav-item"><i data-lucide="layout-grid"></i> Overview</a>
+                <a href="paths.html" class="nav-item active"><i data-lucide="layers"></i> My paths</a>
+            </div>
+            
+            <div class="nav-section">
+                <p class="section-label">INSTRUCTOR</p>
+                <a href="#" class="nav-item"><i data-lucide="clock"></i> Path builder</a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <nav class="top-nav">
+                <div class="nav-links">
+                    <a href="dashboard.html">Dashboard</a>
+                    <a href="#" class="active">Resources</a>
+                </div>
+                <div class="user-profile">
+                    <span class="user-name" style="font-size: 0.9rem; color: var(--text-dim);">alfrida_pais</span>
+                    <div class="avatar">AP</div>
+                </div>
+            </nav>
+
+            <div class="page-header">
+                <div>
+                    <h1>My Learning Paths</h1>
+                    <p style="color: var(--text-dim); margin: 5px 0 0;">Track your detailed curriculum progress.</p>
+                </div>
+                <button class="btn-purple" style="font-size: 0.8rem;">+ Explore Catalog</button>
+            </div>
+
+            <div class="filter-tabs">
+                <div class="tab active">All Paths (3)</div>
+                <div class="tab">In Progress</div>
+                <div class="tab">Completed</div>
+            </div>
+
+            <div class="paths-list-container">
+                <div class="detailed-path-card">
+                    <div class="path-info">
+                        <h2>Full-stack Engineering</h2>
+                        <div class="path-meta">
+                            <div class="meta-item"><i data-lucide="book-open" size="14"></i> 12 Modules</div>
+                            <div class="meta-item"><i data-lucide="clock" size="14"></i> 48 Hours Total</div>
+                            <div class="meta-item"><i data-lucide="award" size="14"></i> Professional Cert</div>
+                        </div>
+                        
+                        <div class="module-preview">
+                            <div class="module-pill">
+                                <span>1. React Hooks Deep Dive</span>
+                                <div class="status-dot" style="background: var(--accent-green);"></div>
+                            </div>
+                            <div class="module-pill">
+                                <span>2. Express Middleware Patterns</span>
+                                <div class="status-dot" style="background: var(--accent-green);"></div>
+                            </div>
+                            <div class="module-pill">
+                                <span style="color: white;">3. PostgreSQL & Prisma ORM</span>
+                                <div class="status-dot" style="background: var(--accent-yellow);"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="progress-right">
+                        <h3 style="margin: 0; font-size: 2.5rem;">44%</h3>
+                        <p style="color: var(--text-dim); font-size: 0.75rem; margin-bottom: 1.5rem; text-transform: uppercase; letter-spacing: 1px;">Overall Progress</p>
+                        <button class="btn-purple" style="width: 100%;">Continue</button>
+                    </div>
+                </div>
+
+                <div class="detailed-path-card">
+                    <div class="path-info">
+                        <h2>ML Fundamentals</h2>
+                        <div class="path-meta">
+                            <div class="meta-item"><i data-lucide="book-open" size="14"></i> 8 Modules</div>
+                            <div class="meta-item"><i data-lucide="clock" size="14"></i> 30 Hours Total</div>
+                        </div>
+                        
+                        <div class="module-preview">
+                            <div class="module-pill">
+                                <span>1. Linear Regression Basics</span>
+                                <div class="status-dot" style="background: var(--accent-green);"></div>
+                            </div>
+                            <div class="module-pill">
+                                <span style="color: white;">2. Neural Network Architectures</span>
+                                <div class="status-dot" style="background: var(--accent-yellow);"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="progress-right">
+                        <h3 style="margin: 0; font-size: 2.5rem;">72%</h3>
+                        <p style="color: var(--text-dim); font-size: 0.75rem; margin-bottom: 1.5rem; text-transform: uppercase; letter-spacing: 1px;">Overall Progress</p>
+                        <button class="btn-purple" style="width: 100%;">Continue</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>
