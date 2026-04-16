@@ -121,16 +121,18 @@
                     <input type="text" id="pathSearch" placeholder="Search paths...">
                 </div>
                 <div class="user-profile">
-                    <span class="user-name">alfrida_pais</span>
-                    <div class="avatar">AP</div>
-                </div>
+    <span id="display-name" class="user-name" style="font-size: 0.9rem; color: var(--text-dim);">
+        Guest
+    </span>
+    <div class="avatar" id="display-avatar">??</div>
+</div>
             </nav>
 
             <div id="dashboardView" class="view-section active-view">
                 <header class="hero">
-                    <h1>Welcome back, <span id="welcome-name">alfrida_pais</span> 👋</h1>
-                    <p style="color:var(--text-dim)">You're on a <span id="streak-label">5</span>-day streak. Keep it up!</p>
-                </header>
+    <h1>Welcome back, <span id="welcome-name">User</span> 👋</h1>
+    <p style="color:var(--text-dim)">You're on a <span id="streak-label">5</span>-day streak. Keep it up!</p>
+</header>
 
                 <section class="stats-grid">
                     <div class="stat-card">
@@ -219,29 +221,40 @@
     <script>
     lucide.createIcons();
 
-    const HOURS_PER_MODULE = 1.6;
-    const MODULES_PER_PATH = 10;
+    function loadUserProfile() {
+    // 1. Pull from storage
+    const savedName = localStorage.getItem('activeUser');
+    
+    // 2. If it's empty, we have a problem! 
+    if (!savedName || savedName === "") {
+        console.error("No name found in storage!");
+        return;
+    }
 
-    // --- IMPROVED VIEW TOGGLING ---
-    // This handles Dashboard, Resources, and Certificates automatically
+    // 3. Update all three locations
+    const topNav = document.getElementById('display-name');
+    const heroName = document.getElementById('welcome-name');
+    const avatar = document.getElementById('display-avatar');
+
+    if (topNav) topNav.innerText = savedName.toLowerCase();
+    if (heroName) heroName.innerText = savedName; // This updates "Welcome back, [Name]"
+    if (avatar) avatar.innerText = savedName.substring(0, 2).toUpperCase();
+}
+
+    // 2. VIEW TOGGLING
     function showView(viewName) {
-        // 1. Define all views and their corresponding nav IDs
         const views = {
             'dashboard': { div: 'dashboardView', side: 'sideDash', top: 'navDash' },
-            'resources': { div: 'resourcesView', side: 'sideRes', top: 'navRes' },
-            'certificates': { div: 'certificatesView', side: 'sideCert', top: null } 
+            'resources': { div: 'resourcesView', side: 'sideRes', top: 'navRes' }
         };
 
-        // 2. Hide all views and remove all active classes
         Object.values(views).forEach(v => {
             const divEl = document.getElementById(v.div);
             if (divEl) divEl.classList.remove('active-view');
-            
             if (v.side) document.getElementById(v.side)?.classList.remove('active');
             if (v.top) document.getElementById(v.top)?.classList.remove('active');
         });
 
-        // 3. Show the selected view
         const target = views[viewName];
         if (target) {
             document.getElementById(target.div).classList.add('active-view');
@@ -250,91 +263,15 @@
         }
     }
 
-    // --- USER STATS LOGIC ---
-    function syncUserStats() {
-        const pathCards = document.querySelectorAll('.path-card');
-        const enrolledStat = document.getElementById('paths-enrolled-stat');
-        
-        if(enrolledStat) enrolledStat.innerText = pathCards.length;
-        
-        let totalModules = 0;
-        pathCards.forEach(card => {
-            const percentText = card.querySelector('.path-percentage').innerText;
-            const percent = parseInt(percentText);
-            totalModules += Math.floor((percent / 100) * MODULES_PER_PATH);
-        });
-
-        document.getElementById('modules-stat').innerText = totalModules;
-        document.getElementById('hours-stat').innerText = (totalModules * HOURS_PER_MODULE).toFixed(1);
-        
-        const streak = localStorage.getItem('userStreak') || 5;
-        const streakStat = document.getElementById('streak-stat');
-        const streakLabel = document.getElementById('streak-label');
-        if(streakStat) streakStat.innerText = streak;
-        if(streakLabel) streakLabel.innerText = streak;
-    }
-
-    // --- PROGRESS LOGIC ---
-    function updateProgress(cardId, increment) {
-        const card = document.getElementById(cardId);
-        const bar = card.querySelector('.progress-fill');
-        const text = card.querySelector('.path-percentage');
-        let newPercent = Math.min(parseInt(text.innerText) + increment, 100);
-        
-        bar.style.width = newPercent + "%";
-        text.innerText = newPercent + "%";
-        syncUserStats();
-    }
-
-    // --- ADD PATH LOGIC ---
-    function addNewPath() {
-        const nameInput = document.getElementById('newPathName');
-        const name = nameInput.value;
-        if (!name) return;
-        
-        const id = "path-" + Date.now();
-        const html = `
-            <div class="path-card" id="${id}" style="animation: slideIn 0.3s ease;">
-                <div style="display:flex; justify-content:space-between">
-                    <h4>${name}</h4>
-                    <span class="path-percentage text-purple">0%</span>
-                </div>
-                <div class="progress-track"><div class="progress-fill bg-purple" style="width: 0%"></div></div>
-                <button class="complete-btn" onclick="updateProgress('${id}', 10)">Mark Module Complete</button>
-            </div>`;
-        
-        document.getElementById('pathsContainer').insertAdjacentHTML('afterbegin', html);
-        nameInput.value = "";
-        syncUserStats();
-    }
-
-    // --- SEARCH LOGIC ---
-    const searchInput = document.getElementById('pathSearch');
-    if(searchInput) {
-        searchInput.addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase();
-            document.querySelectorAll('.path-card').forEach(card => {
-                const title = card.querySelector('h4').innerText.toLowerCase();
-                card.style.display = title.includes(searchTerm) ? "block" : "none";
-            });
-        });
-    }
-
-    // --- URL PARAMETER LISTENER ---
+    // 3. INITIALIZATION
     window.addEventListener('DOMContentLoaded', () => {
-        syncUserStats();
-
-        // Check if user came from paths.html with a request for a specific view
-        const urlParams = new URLSearchParams(window.location.search);
-        const viewRequest = urlParams.get('view');
-
-        if (viewRequest === 'resources') {
-            showView('resources');
-        } else if (viewRequest === 'certificates') {
-            showView('certificates');
-        }
+        loadUserProfile();
+        
+        // Update stats
+        const cards = document.querySelectorAll('.path-card');
+        const stat = document.getElementById('paths-enrolled-stat');
+        if(stat) stat.innerText = cards.length;
     });
-
 </script>
 </body>
 </html>

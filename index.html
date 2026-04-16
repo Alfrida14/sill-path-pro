@@ -91,12 +91,21 @@
     </div>
 
     <script>
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const name = document.getElementById('username').value;
-            localStorage.setItem('userDisplayName', name);
-            window.location.href = 'dashboard.html';
-        });
-    </script>
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        // 1. Get the name exactly as typed
+        const typedName = document.getElementById('username').value;
+
+        // 2. FORCE SAVE to localStorage
+        localStorage.setItem('activeUser', typedName);
+
+        // 3. DEBUG: Check if it actually saved before leaving the page
+        console.log("Saving name:", localStorage.getItem('activeUser'));
+
+        // 4. Redirect to the dashboard
+        window.location.href = 'dashboard.html';
+    });
+</script>
 </body>
 </html>

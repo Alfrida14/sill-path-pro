@@ -134,15 +134,15 @@
 
         <main class="main-content">
             <nav class="top-nav">
-                <div class="nav-links">
-                    <a href="dashboard.html">Dashboard</a>
-                    <a href="dashboard.html?view=resources">Resources</a>
-                </div>
-                <div class="user-profile">
-                    <span class="user-name" style="font-size: 0.9rem; color: var(--text-dim);">alfrida_pais</span>
-                    <div class="avatar">AP</div>
-                </div>
-            </nav>
+    <div class="nav-links">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="dashboard.html?view=resources">Resources</a>
+    </div>
+    <div class="user-profile">
+        <span id="display-name" style="font-size: 0.9rem; color: var(--text-dim);">User</span>
+        <div class="avatar" id="display-avatar">U</div>
+    </div>
+</nav>
 
             <div class="page-header">
                 <div>
@@ -218,30 +218,52 @@
     </div>
 
     <script>
-        lucide.createIcons();
+    lucide.createIcons();
 
-        function filterPaths(status, element) {
-            // Update active tab UI
-            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-            element.classList.add('active');
+    // --- NEW: Dynamic Name Logic ---
+    function loadUserProfile() {
+        const savedName = localStorage.getItem('activeUser') || "Guest User";
+        
+        const nameDisplay = document.getElementById('display-name');
+        const avatarDisplay = document.getElementById('display-avatar');
 
-            const cards = document.querySelectorAll('.detailed-path-card');
-            
-            cards.forEach(card => {
-                const percentText = card.querySelector('.percent-display').innerText;
-                const percentage = parseInt(percentText);
-
-                if (status === 'all') {
-                    card.style.display = 'grid';
-                } else if (status === 'in-progress') {
-                    // Show if percentage is > 0 and < 100
-                    card.style.display = (percentage > 0 && percentage < 100) ? 'grid' : 'none';
-                } else if (status === 'completed') {
-                    // Show only if percentage is 100
-                    card.style.display = (percentage === 100) ? 'grid' : 'none';
-                }
-            });
+        if (nameDisplay) {
+            // Converts "Arjun Mehra" to "arjun_mehra" to keep your style
+            nameDisplay.innerText = savedName.toLowerCase().replace(/\s+/g, '_');
         }
-    </script>
+
+        if (avatarDisplay) {
+            // Takes first letter of first and last name (e.g., "Arjun Mehra" -> "AM")
+            const initials = savedName.split(' ').map(n => n[0]).join('').toUpperCase();
+            avatarDisplay.innerText = initials.substring(0, 2);
+        }
+    }
+
+    // --- Filter Logic ---
+    function filterPaths(status, element) {
+        document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+        element.classList.add('active');
+
+        const cards = document.querySelectorAll('.detailed-path-card');
+        
+        cards.forEach(card => {
+            const percentText = card.querySelector('.percent-display').innerText;
+            const percentage = parseInt(percentText);
+
+            if (status === 'all') {
+                card.style.display = 'grid';
+            } else if (status === 'in-progress') {
+                card.style.display = (percentage > 0 && percentage < 100) ? 'grid' : 'none';
+            } else if (status === 'completed') {
+                card.style.display = (percentage === 100) ? 'grid' : 'none';
+            }
+        });
+    }
+
+    // --- Initialize ---
+    window.addEventListener('DOMContentLoaded', () => {
+        loadUserProfile(); // Run this immediately when page loads
+    });
+</script>
 </body>
 </html>
